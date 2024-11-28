@@ -23,22 +23,22 @@ $logger->info("Config file read successfully");
 
 my $api_key = $config->{Redmine}->{api_key};
 my $tracker_id = $config->{Redmine}->{tracker_id};
-my $url = $config->{Redmine}->{url};
+my $base_url = $config->{Redmine}->{url};  # Renamed to base_url for consistency
 
 $logger->info("API Key: $api_key");
 $logger->info("Tracker ID: $tracker_id");
-$logger->info("URL: $url");
+$logger->info("Base URL: $base_url");
 
-if (!defined $api_key || !defined $tracker_id || !defined $url) {
-    $logger->fatal("API key, tracker ID, or URL not found in config file");
-    die "API key, tracker ID, or URL not found in config file";
+if (!defined $api_key || !defined $tracker_id || !defined $base_url) {
+    $logger->fatal("API key, tracker ID, or base URL not found in config file");
+    die "API key, tracker ID, or base URL not found in config file";
 }
 
 # Set up Redmine client
-$logger->info("Setting up Redmine client with URL: $url and API Key: $api_key");
+$logger->info("Setting up Redmine client with Base URL: $base_url and API Key: $api_key");
 my $redmine = Redmine::API->new(
-    url     => $url,
-    api_key => $api_key
+    base_url => $base_url,
+    auth_key => $api_key
 );
 
 $logger->info("Redmine client setup successful");
@@ -82,31 +82,4 @@ sub parse_email {
     my ($project_id) = $to =~ /\+([^@]+)@/;
 
     $logger->info("Parsed email with subject: $subject and project ID: $project_id");
-    return ($project_id, $subject, $body);
-}
-
-# Read email from standard input
-my $email = io('-')->all;
-
-$logger->info("Reading email from standard input");
-
-# Parse email
-my ($project_id, $subject, $description) = parse_email($email);
-
-if (!defined $project_id) {
-    $logger->fatal("Project ID could not be extracted from the email address");
-    die "Project ID could not be extracted from the email address";
-}
-
-# Create ticket in Redmine
-my $ticket_id;
-eval {
-    $ticket_id = create_ticket($project_id, $subject, $description);
-};
-
-if ($@) {
-    $logger->fatal("Failed to create ticket: $@");
-    die "Failed to create ticket: $@";
-}
-
-$logger->info("Created ticket with ID: $ticket_id");
+    return ($project_id, $subject, $
