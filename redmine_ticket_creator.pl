@@ -82,4 +82,31 @@ sub parse_email {
     my ($project_id) = $to =~ /\+([^@]+)@/;
 
     $logger->info("Parsed email with subject: $subject and project ID: $project_id");
-    return ($project_id, $subject, $
+    return ($project_id, $subject, $body);
+}
+
+# Read email from standard input
+my $email = io('-')->all;
+
+$logger->info("Reading email from standard input");
+
+# Parse email
+my ($project_id, $subject, $description) = parse_email($email);
+
+if (!defined $project_id) {
+    $logger->fatal("Project ID could not be extracted from the email address");
+    die "Project ID could not be extracted from the email address";
+}
+
+# Create ticket in Redmine
+my $ticket_id;
+eval {
+    $ticket_id = create_ticket($project_id, $subject, $description);
+};
+
+if ($@) {
+    $logger->fatal("Failed to create ticket: $@");
+    die "Failed to create ticket: $@";
+}
+
+$logger->info("Created ticket with ID: $ticket_id");
