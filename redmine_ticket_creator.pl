@@ -36,8 +36,8 @@ if (!defined $api_key || !defined $tracker_id || !defined $url) {
 # Set up Redmine client
 $logger->info("Setting up Redmine client with URL: $url and API Key: $api_key");
 my $redmine = Redmine::API->new(
-    base_url     => $url,
-    auth_key => $api_key
+    url     => $url,
+    api_key => $api_key
 );
 
 $logger->info("Redmine client setup successful");
@@ -48,6 +48,7 @@ sub create_ticket {
 
     my $issue;
     eval {
+        $logger->info("Creating ticket with Project ID: $project_id, Subject: $subject");
         $issue = $redmine->issue->create(
             project_id  => $project_id,
             subject     => $subject,
@@ -55,6 +56,7 @@ sub create_ticket {
             tracker_id  => $tracker_id,
             status_id   => 1    # Adjust as needed
         );
+        $logger->info("Redmine response: " . (defined $issue ? $issue : "No response received"));
     };
 
     if ($@) {
