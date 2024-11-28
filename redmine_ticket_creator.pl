@@ -9,18 +9,24 @@ use IO::All;
 use Log::Log4perl qw(get_logger :levels);
 
 # Initialize logging
-Log::Log4perl->init($ENV{HOME} . '/etc/logging.conf');
+Log::Log4perl->init('logging.conf');
 my $logger = get_logger();
 
 # Read configuration
-my $config = Config::Tiny->read($ENV{HOME} . '/etc/config.ini');
+my $config = Config::Tiny->read('config.ini');
 if (!defined $config) {
     $logger->fatal("Failed to read config file: $!");
     die "Failed to read config file: $!";
 }
+$logger->info("Config file read successfully");
+
 my $api_key = $config->{Redmine}->{api_key};
 my $tracker_id = $config->{Redmine}->{tracker_id};
 my $url = $config->{Redmine}->{url};
+
+$logger->info("API Key: $api_key");
+$logger->info("Tracker ID: $tracker_id");
+$logger->info("URL: $url");
 
 if (!defined $api_key || !defined $tracker_id || !defined $url) {
     $logger->fatal("API key, tracker ID, or URL not found in config file");
@@ -98,4 +104,3 @@ if ($@) {
 }
 
 $logger->info("Created ticket with ID: $ticket_id");
-
