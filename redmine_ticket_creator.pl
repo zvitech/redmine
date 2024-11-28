@@ -34,10 +34,13 @@ if (!defined $api_key || !defined $tracker_id || !defined $url) {
 }
 
 # Set up Redmine client
+$logger->info("Setting up Redmine client with URL: $url and API Key: $api_key");
 my $redmine = Redmine::API->new(
-    url    => $url,
+    url     => $url,
     api_key => $api_key
 );
+
+$logger->info("Redmine client setup successful");
 
 # Function to create a ticket in Redmine
 sub create_ticket {
