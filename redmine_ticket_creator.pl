@@ -37,7 +37,7 @@ if (!defined $api_key || !defined $tracker_id || !defined $url) {
 $logger->info("Setting up Redmine client with URL: $url and API Key: $api_key");
 my $redmine = Redmine::API->new(
     base_url     => $url,
-    api_key => $api_key
+    auth_key => $api_key
 );
 
 $logger->info("Redmine client setup successful");
